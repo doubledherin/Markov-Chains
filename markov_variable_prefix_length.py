@@ -5,7 +5,7 @@ import random, string
 
 
 
-def make_chains(corpus, num):
+def make_chains(corpus):
     """Takes an input text as a string and returns a dictionary of
     markov chains."""
 
@@ -24,27 +24,20 @@ def make_chains(corpus, num):
     list_of_words = new_corpus.split()
 
     d = {}
-    for i in range( (len(list_of_words) - num) ):
 
-        for j in range(num):
-            prefix = []
-            prefix.append(list_of_words[j])
-#            prefix = (list_of_words[i], list_of_words[i+1])
-        prefix = tuple(prefix)
-        suffix = list_of_words[i+2] 
-        
+    
+    for i in range( (len(list_of_words) - 3) ):
+
+        prefix = (list_of_words[i], list_of_words[i+1], list_of_words[i+2])
+        suffix = list_of_words[i+3] 
+
         if prefix not in d:
             d[prefix] = [suffix]  # initializes the suffix as a list
         else:
             d[prefix].append(suffix)
-
-    # add link from end of wordlist to beginning of wordlist
-    prefix = (list_of_words[-2], list_of_words[-1])
-    suffix = list_of_words[0]
-    d[prefix] = suffix
-
+    
     return d
-
+        
 def make_text(chains):
     """Takes a dictionary of markov chains and returns random text
     based off an original text."""
@@ -74,7 +67,7 @@ def make_text(chains):
 
         # create a new prefix from the last item in the old prefix and
         # the last suffix
-        prefix = (prefix[1], suffix)
+        prefix = (prefix[1], prefix[2], suffix)
 
         # choose a random suffix from the new prefix's values
         suffix = random.choice(chains[prefix])
@@ -85,14 +78,13 @@ def make_text(chains):
     return markov_text
 
 def main():
-    script, filename, num = argv
-    num = int(num)
+    script, filename = argv
     fin = open(filename)
     input_text = fin.read()
     fin.close()
 
 
-    chain_dict = make_chains(input_text, num)
+    chain_dict = make_chains(input_text)
     random_text = make_text(chain_dict)
     print random_text
 
