@@ -3,6 +3,10 @@
 from sys import argv
 import random, string
 
+script, filename, prefix_length = argv
+prefix_length = int(prefix_length)
+
+
 
 
 def make_chains(corpus):
@@ -28,22 +32,30 @@ def make_chains(corpus):
     list_of_words = new_corpus.split()
 
     d = {}
-    for i in range( (len(list_of_words) - 2) ):
 
-        prefix = (list_of_words[i], list_of_words[i+1])
-        suffix = list_of_words[i+2] 
+    for i in range( (len(list_of_words) - prefix_length) ):
+
+        j = i
+
+        prefix = []
+        for j in range(prefix_length):
+            prefix.append(list_of_words[j])
+        prefix = tuple(prefix)
+
+        suffix = list_of_words[j + prefix_length] 
         
         if prefix not in d:
             d[prefix] = [suffix]  # initializes the suffix as a list
         else:
             d[prefix].append(suffix)
 
+    # TO DO REWRITE THIS
     # add link from end of wordlist to beginning of wordlist
     prefix = (list_of_words[-2], list_of_words[-1])
     suffix = list_of_words[0]
     d[prefix] = suffix
 
-    return d
+    print d
 
 def make_text(chains):
     """Takes a dictionary of markov chains and returns random text
@@ -85,8 +97,6 @@ def make_text(chains):
     return markov_text
 
 def main():
-    script, filename, prefix_length = argv
-    prefix_length = int(prefix_length)
     fin = open(filename)
     input_text = fin.read()
     fin.close()

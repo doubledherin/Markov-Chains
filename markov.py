@@ -17,10 +17,6 @@ def make_chains(corpus):
         if char in "_[]*" or char == "--":
             continue
         
-        # replace newlines and tabs with a space
-        if char in "\n\t":
-            new_corpus += " "
-
         # put everything else in the new_corpus string      
         else:
             new_corpus += char
