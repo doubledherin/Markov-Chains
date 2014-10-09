@@ -66,7 +66,7 @@ def make_text(chains):
     prefix = random_prefix
     suffix = random_suffix
 
-    for i in range(100):
+    for i in range(1000):
 
         # create a new prefix from the last item in the old prefix and
         # the last suffix
@@ -76,7 +76,7 @@ def make_text(chains):
         suffix = random.choice(chains[prefix])
 
         # add it all to the random text string
-        markov_text += "%s %s %s " % (prefix[0], prefix[1], suffix)
+        markov_text += "%s " % (suffix)
 
     return markov_text
 
