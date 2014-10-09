@@ -12,7 +12,7 @@ def make_chains(corpus, num):
     for char in corpus:
 
         # leave out certain kinds of punctuation
-        if char in "_[]*": # NOT WORKING DELETE THIS or char == "--":
+        if char in "_*": # NOT WORKING DELETE THIS or char == "--":
             continue
         
         # put everything else in the new_corpus string      
