@@ -3,13 +3,9 @@
 from sys import argv
 import random, string
 
-script, filename, prefix_length = argv
-prefix_length = int(prefix_length)
 
 
-
-
-def make_chains(corpus):
+def make_chains(corpus, num):
     """Takes an input text as a string and returns a dictionary of
     markov chains."""
 
@@ -21,10 +17,6 @@ def make_chains(corpus):
         if char in "_[]*" or char == "--":
             continue
         
-        # replace newlines and tabs with a space
-        if char in "\n\t":
-            new_corpus += " "
-
         # put everything else in the new_corpus string      
         else:
             new_corpus += char
@@ -32,30 +24,26 @@ def make_chains(corpus):
     list_of_words = new_corpus.split()
 
     d = {}
+    for i in range( (len(list_of_words) - num) ):
 
-    for i in range( (len(list_of_words) - prefix_length) ):
-
-        j = i
-
-        prefix = []
-        for j in range(prefix_length):
+        for j in range(num):
+            prefix = []
             prefix.append(list_of_words[j])
+#            prefix = (list_of_words[i], list_of_words[i+1])
         prefix = tuple(prefix)
-
-        suffix = list_of_words[j + prefix_length] 
+        suffix = list_of_words[i+2] 
         
         if prefix not in d:
             d[prefix] = [suffix]  # initializes the suffix as a list
         else:
             d[prefix].append(suffix)
 
-    # TO DO REWRITE THIS
     # add link from end of wordlist to beginning of wordlist
     prefix = (list_of_words[-2], list_of_words[-1])
     suffix = list_of_words[0]
     d[prefix] = suffix
 
-    print d
+    return d
 
 def make_text(chains):
     """Takes a dictionary of markov chains and returns random text
@@ -82,7 +70,7 @@ def make_text(chains):
     prefix = random_prefix
     suffix = random_suffix
 
-    for i in range(100):
+    for i in range(1000):
 
         # create a new prefix from the last item in the old prefix and
         # the last suffix
@@ -92,17 +80,19 @@ def make_text(chains):
         suffix = random.choice(chains[prefix])
 
         # add it all to the random text string
-        markov_text += "%s %s %s " % (prefix[0], prefix[1], suffix)
+        markov_text += "%s " % (suffix)
 
     return markov_text
 
 def main():
+    script, filename, num = argv
+    num = int(num)
     fin = open(filename)
     input_text = fin.read()
     fin.close()
 
 
-    chain_dict = make_chains(input_text)
+    chain_dict = make_chains(input_text, num)
     random_text = make_text(chain_dict)
     print random_text
 

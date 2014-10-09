@@ -34,11 +34,6 @@ def make_chains(corpus):
         else:
             d[prefix].append(suffix)
 
-    # add link from end of wordlist to beginning of wordlist
-    prefix = (list_of_words[-2], list_of_words[-1])
-    suffix = list_of_words[0]
-    d[prefix] = suffix
-
     return d
 
 def make_text(chains):
