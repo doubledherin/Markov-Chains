@@ -14,63 +14,72 @@ def make_chains(corpus, num):
     
     for char in corpus:
 
-        # leave out certain kinds of punctuation
-        if char in "_*": # NOT WORKING DELETE THIS or char == "--":
+        # Leave out certain kinds of punctuation
+        if char in "_*":
             continue
         
-        # put everything else in the new_corpus string      
+        # Keep everything else      
         else:
             new_corpus += char
 
+    # Split the cleaned corpus into a list of words
     list_of_words = new_corpus.split()
 
+
+    # Initialize the dictionary that will hold the Markov chains
     d = {}
 
-    
+    # Build chains, where the key (prefix) is a tuple 
+    # and the value is a list of legal suffixes
     for i in range( (len(list_of_words) - num) ):
+        
         prefix = []
         
+        # Build a prefix of length num
         for j in range(num):
+
             prefix.append(list_of_words[i + j])
+        
         prefix = tuple(prefix)
         
-#        prefix = (list_of_words[i], list_of_words[i+1], list_of_words[i+2])
         suffix = list_of_words[i+num] 
 
+        # Add to dictionary
         if prefix not in d:
             d[prefix] = [suffix]  # initializes the suffix as a list
         else:
             d[prefix].append(suffix)
+            
     return d
         
 def make_text(chains, num):
     """Takes a dictionary of markov chains and returns random text
     based off an original text."""
 
-    # create a list of chain's keys, then return one of the keys at random
+    # Create a list of chain's keys, then return one of the keys at random
     random_prefix = random.choice(chains.keys())
 
-    # from the list of values for the chosen key, return one value at random
+    # From the list of values for the chosen key, return one value at random
     random_suffix = random.choice(chains[random_prefix])
     
-    # initialize an empty string for our random text string
+    # Initialize an empty string for our random text string
     markov_text = ""
 
-    # iterate over prefix's tuple and add each word to the random text string
+    # Iterate over prefix's tuple and add each word to the random text string
     for word in random_prefix:
         markov_text += word + " "
 
-    # then add the suffix
+    # Then add the suffix
     markov_text += random_suffix + " "
 
-    # rename random_prefix and random_suffix so that we can call them
+    # Rename random_prefix and random_suffix so that we can call them
     # in a the following for loop
     prefix = random_prefix
     suffix = random_suffix
 
     for i in range(30):
 
-        # create a new prefix from the last items in the most recent prefix and
+        # Create a new prefix from the last items in the most recent prefix and
         # the most recent suffix
         newprefix = []
 
@@ -79,36 +88,37 @@ def make_text(chains, num):
         newprefix.append(suffix)
         prefix = tuple(newprefix)
 
-        # choose a random suffix from the new prefix's values
+        # Choose a random suffix from the new prefix's values
         suffix = random.choice(chains[prefix])
 
-        # add it all to the random text string
+        # Add it all to the random text string
         markov_text += "%s " % (suffix)
 
     return markov_text
 
 def tweetmash(markov_text):
+    """Takes a randomly generated markovian string and returns a
+    reduced, tweet-length version of it.
+    """
+    # Split string into words
     words = markov_text.split()
     
-    # Start with a capitalized word.
+    # Remove the first word until the first word is initial capped
     while words[0].istitle() == False:
         words.pop(0)
 
-    # End with end punctuation.
+    # Remove the final words until the final words ends with end punctuation
     while words[-1][-1] not in ".!\"?'":
         words.pop()
 
-    # TO DO check for 140 char
+    # Put the list back into a string and recursive until it's <= 140
     tweet = (" ").join(words)
-    
     if len(tweet) > 140:
         tweetmash(tweet)
     else:
         return tweet
 
-
-
-"""
+"""TO INCORPATE LATER
     api = twitter.Api(consumer_key=os.environ.get('TWITTER_CONSUMER_KEY'),
                       consumer_secret=os.environ.get('TWITTER_CONSUMER_SECRET'),
                       access_token_key=os.environ.get('TWITTER_ACCESS_TOKEN'),
