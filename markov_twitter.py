@@ -15,7 +15,7 @@ def make_chains(corpus, num):
     for char in corpus:
 
         # Leave out certain kinds of punctuation
-        if char in "_*":
+        if char in "_*\"":
             continue
         
         # Keep everything else      
@@ -102,7 +102,7 @@ def tweetmash(markov_text):
     """
     # Split string into words
     words = markov_text.split()
-    
+
     # Remove the first word until the first word is initial capped
     while words[0].istitle() == False:
         words.pop(0)
@@ -111,19 +111,19 @@ def tweetmash(markov_text):
     while words[-1][-1] not in ".!\"?'":
         words.pop()
 
-    # Put the list back into a string and recursive until it's <= 140
+    # Put the list back into a string and decrease len and recurse until it's <= 140
     tweet = (" ").join(words)
     if len(tweet) > 140:
+        tweet = tweet[:138]
         tweetmash(tweet)
     else:
-        return tweet
+        if tweet != None:
 
-"""TO INCORPATE LATER
-    api = twitter.Api(consumer_key=os.environ.get('TWITTER_CONSUMER_KEY'),
-                      consumer_secret=os.environ.get('TWITTER_CONSUMER_SECRET'),
-                      access_token_key=os.environ.get('TWITTER_ACCESS_TOKEN'),
-                      access_token_secret=os.environ.get('TWITTER_ACCESS_SECRET'))
-"""
+            api = twitter.Api(consumer_key=os.environ.get('TWITTER_CONSUMER_KEY'),
+                              consumer_secret=os.environ.get('TWITTER_CONSUMER_SECRET'),
+                              access_token_key=os.environ.get('TWITTER_ACCESS_TOKEN'),
+                              access_token_secret=os.environ.get('TWITTER_ACCESS_SECRET'))
+            status = api.PostUpdate(tweet)
 
 def main():
     script, filename1, filename2, num = argv
