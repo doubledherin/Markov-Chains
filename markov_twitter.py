@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 
+import os
+import twitter
 from sys import argv
-import random, string
+import random
+import string
 
 def make_chains(corpus, num):
     """Takes an input text as a string and returns a dictionary of
@@ -65,7 +68,7 @@ def make_text(chains, num):
     prefix = random_prefix
     suffix = random_suffix
 
-    for i in range(100):
+    for i in range(30):
 
         # create a new prefix from the last items in the most recent prefix and
         # the most recent suffix
@@ -83,19 +86,34 @@ def make_text(chains, num):
         markov_text += "%s " % (suffix)
 
     return markov_text
-#### TO DO: FIX TWEETMASH ######
-def tweetmash(markov_text):
-    oneforty = ""
-    while len(oneforty) < 140:
-        for char in markov_text:
-            oneforty += char
-    words = oneforty.split()
 
-    for word in words:
-        if not word.istitle():
-            continue
-    print oneforty
-###########################
+def tweetmash(markov_text):
+    words = markov_text.split()
+    
+    # Start with a capitalized word.
+    while words[0].istitle() == False:
+        words.pop(0)
+
+    # End with end punctuation.
+    while words[-1][-1] not in ".!\"?'":
+        words.pop()
+
+    # TO DO check for 140 char
+    tweet = (" ").join(words)
+    
+    if len(tweet) > 140:
+        tweetmash(tweet)
+    else:
+        return tweet
+
+
+
+"""
+    api = twitter.Api(consumer_key=os.environ.get('TWITTER_CONSUMER_KEY'),
+                      consumer_secret=os.environ.get('TWITTER_CONSUMER_SECRET'),
+                      access_token_key=os.environ.get('TWITTER_ACCESS_TOKEN'),
+                      access_token_secret=os.environ.get('TWITTER_ACCESS_SECRET'))
+"""
 
 def main():
     script, filename1, filename2, num = argv
@@ -111,8 +129,7 @@ def main():
     chain_dict = make_chains(input_text, num)
     random_text = make_text(chain_dict, num)
     random_tweet = tweetmash(random_text)
-    print random_tweet
-
+    print "\n%s\n" % random_tweet
 
 
 if __name__ == "__main__":
